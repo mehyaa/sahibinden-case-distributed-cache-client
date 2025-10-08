@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api libs.curator.framework
+    api libs.curator.recipes
+    api libs.okhttp
+
+    implementation libs.guava
+    implementation libs.slf4j.simple
+
+    testImplementation libs.curator.test
+    testImplementation libs.junit.jupiter
+
+    testRuntimeOnly libs.junit.platform.launcher
+}

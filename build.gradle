@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+// Versions are managed by Gradle version catalog (gradle/libs.versions.toml)
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    version = '1.0.0'
+
+    if (project.name != 'cache-client') {
+        apply plugin: 'application'
+    }
+
+    apply plugin: 'java'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    dependencies {
+        testImplementation libs.junit.jupiter
+
+        testRuntimeOnly libs.junit.platform.launcher
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}

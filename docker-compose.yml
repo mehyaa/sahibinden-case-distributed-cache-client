@@ -1,0 +1,23 @@
+services:
+  cache-server:
+    build:
+      context: ./cache-server
+    ports:
+      - "6379:6379"
+    networks:
+      - cache-network
+
+  sample:
+    build:
+      context: ./sample
+    depends_on:
+      - cache-server
+    networks:
+      - cache-network
+    environment:
+      - CACHE_SERVER_HOST=cache-server
+      - CACHE_SERVER_PORT=6379
+
+networks:
+  cache-network:
+    driver: bridge

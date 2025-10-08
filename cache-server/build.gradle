@@ -1,0 +1,14 @@
+plugins {
+    id 'application'
+}
+
+application {
+    mainClass = 'com.mehyaa.cacheserver.CacheServerApplication'
+}
+
+dependencies {
+    implementation libs.curator.framework
+    implementation libs.curator.recipes
+    implementation libs.javalin
+    implementation libs.slf4j.simple
+}

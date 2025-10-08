@@ -1,0 +1,19 @@
+[versions]
+curator = "5.9.0"
+javalin = "6.7.0"
+junit = "5.9.2"
+junitPlatform = "1.9.2"
+guava = "33.5.0-jre"
+okhttp = "5.1.0"
+slf4j = "2.0.17"
+
+[libraries]
+curator-framework = { module = "org.apache.curator:curator-framework", version.ref = "curator" }
+curator-recipes = { module = "org.apache.curator:curator-recipes", version.ref = "curator" }
+curator-test = { module = "org.apache.curator:curator-test", version.ref = "curator" }
+javalin = { module = "io.javalin:javalin", version.ref = "javalin" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatform" }
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }

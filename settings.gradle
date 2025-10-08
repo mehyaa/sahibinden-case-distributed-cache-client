@@ -1,0 +1,5 @@
+rootProject.name = 'sahibinden-case-distributed-cache-client'
+
+include 'cache-server'
+include 'cache-client'
+include 'sample'
