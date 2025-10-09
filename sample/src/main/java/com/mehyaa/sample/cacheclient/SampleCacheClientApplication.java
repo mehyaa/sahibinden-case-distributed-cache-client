@@ -90,17 +90,23 @@ public class SampleCacheClientApplication {
 
                 if (operation < 6) { // GET (%60 probability)
                     String value = client.get(key);
-                    logger.info("Thread-{} GET: key={}, value={}", threadId, key, value);
+
+                    if (value.length() > 24) {
+                        String logValue = value.substring(0, 24) + "...(truncated)";
+                        logger.info("Thread-{} GET: key={}, value={}", threadId, key, logValue);
+                    } else {
+                        logger.info("Thread-{} GET: key={}, value={}", threadId, key, value);
+                    }
                 } else if (operation < 9) { // PUT (%30 probability)
                     String value = generateRandomPayload(MIN_PAYLOAD_SIZE_BYTES, MAX_PAYLOAD_SIZE_BYTES);
+
                     client.put(key, value);
 
                     if (value.length() > 24) {
                         String logValue = value.substring(0, 24) + "...(truncated)";
                         logger.info("Thread-{} PUT: key={}, value={}", threadId, key, logValue);
-                    }
-                    else {
-                        logger.info("Thread-{} PUT: key={}, value={}", threadId, key, value.substring(0, 50));
+                    } else {
+                        logger.info("Thread-{} PUT: key={}, value={}", threadId, key, value);
                     }
                 } else { // DELETE (%10 probability)
                     client.delete(key);
