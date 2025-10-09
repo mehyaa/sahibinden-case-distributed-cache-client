@@ -16,10 +16,12 @@ The project consists of several modules:
 - REST API for cache operations (GET, PUT/POST, DELETE)
 - In-memory cache with ZooKeeper-based coordination
 - Dockerized deployment with docker-compose
+
 ## Prerequisites
 
 - Docker / Podman
 - Java 17
+- Gradle
 
 ## Building the Project
 
