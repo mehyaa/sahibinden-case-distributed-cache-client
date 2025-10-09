@@ -16,17 +16,18 @@ public class SampleCacheClientApplication {
     private static final Logger logger = LoggerFactory.getLogger(SampleCacheClientApplication.class);
 
     private static final int NUM_THREADS = 10;
-    private static final int TEST_DURATION_SECONDS = 3 * 60; // 3 minutes
     private static final int KEY_SPACE = 100_000;
 
     private static final int MIN_PAYLOAD_SIZE_BYTES = 5; // 5 Bytes
-    private static final int MAX_PAYLOAD_SIZE_BYTES = 5 * 1024; // 5 Kilobytes
+    private static final int MAX_PAYLOAD_SIZE_BYTES = 32 * 1024; // 32 Kilobytes
 
     public static void main(String[] args) throws Exception {
         try (CacheClient client = CacheClient.getInstance()) {
+            initializeCacheValues(client);
+
             ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
-            logger.info("Starting load test with {} threads for {} seconds...", NUM_THREADS, TEST_DURATION_SECONDS);
+            logger.info("Starting load test with {} threads...", NUM_THREADS);
 
             for (int i = 0; i < NUM_THREADS; i++) {
                 final int threadId = i;
@@ -65,6 +66,37 @@ public class SampleCacheClientApplication {
         }
 
         logger.info("Application has exited.");
+    }
+
+    /**
+     * Initializes the cache with some values before starting operations.
+     *
+     * @param client The CacheClient instance to use for operations.
+     */
+    private static void initializeCacheValues(CacheClient client) {
+        try {
+            logger.info("Initializing cache with some values...");
+
+            int progress = 0;
+
+            for (int i = 0; i < KEY_SPACE; i++) {
+                String key = "test-key-" + i;
+                String value = generateRandomPayload(MIN_PAYLOAD_SIZE_BYTES, MAX_PAYLOAD_SIZE_BYTES);
+                client.put(key, value);
+
+                int currentProgress = (int) ((i * 100) / KEY_SPACE);
+
+                if (currentProgress > progress) {
+                    progress = currentProgress;
+
+                    logger.info("Initialized {}% of keys.", progress);
+                }
+            }
+
+            logger.info("Cache initialization complete.");
+        } catch (Exception e) {
+            logger.error("Encountered an error during cache initialization", e);
+        }
     }
 
     /**
