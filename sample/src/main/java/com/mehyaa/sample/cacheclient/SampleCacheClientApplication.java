@@ -30,6 +30,28 @@ public class SampleCacheClientApplication {
                 executor.submit(() -> runCacheOperations(threadId, client));
             }
 
+            // Ensure the executor is shut down when JVM exits
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    executor.shutdownNow();
+
+                    if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                        logger.error("Executor did not terminate in 1 second.");
+                    } else {
+                        logger.info("All worker threads have been shut down gracefully.");
+                    }
+
+                    CacheClient singleton = client;
+
+                    if (singleton != null) {
+                        singleton.close();
+                    }
+
+                    logger.warn("Demo terminated");
+                } catch (Exception ignored) {
+                }
+            }));
+
             Thread.sleep(TimeUnit.SECONDS.toMillis(TEST_DURATION_SECONDS));
 
             logger.info("Test finished. Shutting down worker threads...");
