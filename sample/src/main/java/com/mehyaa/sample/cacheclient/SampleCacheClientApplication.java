@@ -20,11 +20,7 @@ public class SampleCacheClientApplication {
     private static final int KEY_SPACE = 100_000;
 
     public static void main(String[] args) throws Exception {
-        CacheClient client = null;
-
-        try {
-            client = CacheClient.getInstance();
-
+        try (CacheClient client = CacheClient.getInstance()) {
             ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
             logger.info("Starting load test with {} threads for {} seconds...", NUM_THREADS, TEST_DURATION_SECONDS);
@@ -47,13 +43,6 @@ public class SampleCacheClientApplication {
             }
 
             logger.info("Demo complete");
-        } finally {
-            if (client != null) {
-                try {
-                    client.close();
-                } catch (Exception ignored) {
-                }
-            }
         }
     }
 
