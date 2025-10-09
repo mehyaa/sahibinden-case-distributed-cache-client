@@ -47,9 +47,10 @@ public class CacheServerApplication {
 
                 String host = detectHostAddress();
                 String data = host + ":" + port;
+                String path = "/cache/nodes/node-" + host + "-" + port;
                 String registeredPath = zkClient.create().creatingParentsIfNeeded()
-                        .withMode(CreateMode.EPHEMERAL_SEQUENTIAL)
-                        .forPath("/cache/nodes/node-" + host, data.getBytes(StandardCharsets.UTF_8));
+                        .withMode(CreateMode.EPHEMERAL)
+                        .forPath(path, data.getBytes(StandardCharsets.UTF_8));
                 registeredPathRef.set(registeredPath);
                 logger.info("Registered in ZooKeeper at {} -> {}", registeredPath, data);
             } catch (Exception e) {
