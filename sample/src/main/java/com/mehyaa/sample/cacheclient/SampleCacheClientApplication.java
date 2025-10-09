@@ -91,7 +91,7 @@ public class SampleCacheClientApplication {
                 if (operation < 6) { // GET (%60 probability)
                     String value = client.get(key);
 
-                    if (value.length() > 24) {
+                    if (value != null && value.length() > 24) {
                         String logValue = value.substring(0, 24) + "...(truncated)";
                         logger.info("Thread-{} GET: key={}, value={}", threadId, key, logValue);
                     } else {
