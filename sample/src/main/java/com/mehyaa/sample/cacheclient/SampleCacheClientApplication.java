@@ -33,44 +33,38 @@ public class SampleCacheClientApplication {
                 executor.submit(() -> runCacheOperations(threadId, client));
             }
 
-            // Ensure the executor is shut down when JVM exits
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
-                    logger.warn("Termination signal received. Shutting down worker threads...");
+                    logger.info("Shutting down worker threads...");
 
                     executor.shutdownNow();
 
-                    if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
-                        logger.error("Executor did not terminate in 1 second.");
-                    } else {
-                        logger.info("All worker threads have been shut down gracefully.");
+                    try {
+                        // Wait a bit for existing tasks to finish their cleanup
+                        if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                            logger.error("Executor did not terminate in 5 seconds.");
+                        }
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
                     }
+
+                    logger.info("All worker threads have been shut down.");
 
                     CacheClient singleton = client;
 
                     if (singleton != null) {
                         singleton.close();
                     }
-
-                    logger.warn("Demo terminated");
                 } catch (Exception ignored) {
                 }
             }));
 
-            Thread.sleep(TimeUnit.SECONDS.toMillis(TEST_DURATION_SECONDS));
-
-            logger.info("Test finished. Shutting down worker threads...");
-
-            executor.shutdownNow();
-
-            if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
-                logger.error("Executor did not terminate in 30 seconds.");
-            } else {
-                logger.info("All worker threads have been shut down gracefully.");
-            }
-
-            logger.info("Demo complete");
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
+
+        logger.info("Application has exited.");
     }
 
     /**
