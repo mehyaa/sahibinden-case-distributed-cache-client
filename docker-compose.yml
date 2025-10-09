@@ -8,7 +8,7 @@ services:
       replicas: 10
       resources:
         limits:
-          memory: 1G
+          memory: 256M
     networks:
       - network
     environment:
@@ -20,6 +20,11 @@ services:
       context: .
     depends_on:
       - cache-server
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          memory: 256M
     networks:
       - network
     environment:
@@ -28,6 +33,10 @@ services:
   zookeeper:
     image: zookeeper
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
     networks:
       - network
     ports:
@@ -49,6 +58,10 @@ services:
   zoonavigator:
     image: elkozmon/zoonavigator
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 384M
     networks:
       - network
     ports:
