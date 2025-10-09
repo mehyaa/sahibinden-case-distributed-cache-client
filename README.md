@@ -36,7 +36,7 @@ The project uses Gradle for building:
 The project includes a docker-compose.yml file for easy deployment:
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 This will start:
