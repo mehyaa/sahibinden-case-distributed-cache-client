@@ -14,4 +14,8 @@ COPY --from=builder /src/cache-server/build/install/cache-server /app
 
 EXPOSE 6379
 
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=80.0"
+
 ENTRYPOINT ["/app/bin/cache-server"]
+
+CMD []

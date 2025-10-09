@@ -12,4 +12,8 @@ WORKDIR /app
 
 COPY --from=builder /src/sample/build/install/sample /app
 
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=80.0"
+
 ENTRYPOINT ["/app/bin/sample"]
+
+CMD []

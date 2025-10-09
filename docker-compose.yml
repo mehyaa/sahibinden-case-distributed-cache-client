@@ -10,7 +10,7 @@ services:
       replicas: 10
       resources:
         limits:
-          memory: 256M
+          memory: 512M
     networks:
       - network
     environment:
@@ -24,7 +24,6 @@ services:
       - cache-server
       - zookeeper
     deploy:
-      replicas: 3
       resources:
         limits:
           memory: 256M
