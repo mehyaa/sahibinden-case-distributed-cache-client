@@ -4,6 +4,8 @@ services:
       dockerfile: ./cache-server/Dockerfile
       context: .
     restart: unless-stopped
+    depends_on:
+      - zookeeper
     deploy:
       replicas: 10
       resources:
@@ -20,6 +22,7 @@ services:
       context: .
     depends_on:
       - cache-server
+      - zookeeper
     deploy:
       replicas: 3
       resources:
@@ -58,6 +61,8 @@ services:
   zoonavigator:
     image: elkozmon/zoonavigator
     restart: unless-stopped
+    depends_on:
+      - zookeeper
     deploy:
       resources:
         limits:
