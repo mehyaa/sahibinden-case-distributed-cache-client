@@ -2,9 +2,9 @@ package com.mehyaa.sample.cacheclient;
 
 import com.mehyaa.cacheclient.CacheClient;
 
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
+import java.util.Base64;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +18,9 @@ public class SampleCacheClientApplication {
     private static final int NUM_THREADS = 10;
     private static final int TEST_DURATION_SECONDS = 3 * 60; // 3 minutes
     private static final int KEY_SPACE = 100_000;
+
+    private static final int MIN_PAYLOAD_SIZE_BYTES = 5; // 5 Bytes
+    private static final int MAX_PAYLOAD_SIZE_BYTES = 5 * 1024; // 5 Kilobytes
 
     public static void main(String[] args) throws Exception {
         try (CacheClient client = CacheClient.getInstance()) {
@@ -33,6 +36,8 @@ public class SampleCacheClientApplication {
             // Ensure the executor is shut down when JVM exits
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
+                    logger.warn("Termination signal received. Shutting down worker threads...");
+
                     executor.shutdownNow();
 
                     if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
@@ -83,24 +88,48 @@ public class SampleCacheClientApplication {
 
                 int operation = ThreadLocalRandom.current().nextInt(10);
 
-                if (operation < 5) { // GET (%50 probability)
+                if (operation < 6) { // GET (%60 probability)
                     String value = client.get(key);
                     logger.info("Thread-{} GET: key={}, value={}", threadId, key, value);
-                } else if (operation < 9) { // PUT (%40 probability)
-                    String value = UUID.randomUUID().toString();
+                } else if (operation < 9) { // PUT (%30 probability)
+                    String value = generateRandomPayload(MIN_PAYLOAD_SIZE_BYTES, MAX_PAYLOAD_SIZE_BYTES);
                     client.put(key, value);
-                    logger.info("Thread-{} PUT: key={}, value={}", threadId, key, value);
+
+                    if (value.length() > 24) {
+                        String logValue = value.substring(0, 24) + "...(truncated)";
+                        logger.info("Thread-{} PUT: key={}, value={}", threadId, key, logValue);
+                    }
+                    else {
+                        logger.info("Thread-{} PUT: key={}, value={}", threadId, key, value.substring(0, 50));
+                    }
                 } else { // DELETE (%10 probability)
                     client.delete(key);
                     logger.info("Thread-{} DELETE: key={}", threadId, key);
                 }
 
-                Thread.sleep(ThreadLocalRandom.current().nextInt(5 * 1000)); // Wait 0-5 seconds
+                Thread.sleep(ThreadLocalRandom.current().nextInt(1000)); // Wait 0-5 seconds
             } catch (Exception e) {
                 logger.error("Thread-{} encountered an error during cache operation", threadId, e);
             }
         }
 
         logger.info("Thread-{} shutting down.", threadId);
+    }
+
+    /**
+     * Generates a random payload of specified size range and encodes it in Base64.
+     *
+     * @param minBytes Minimum size of the generated data (in bytes).
+     * @param maxBytes Maximum size of the generated data (in bytes).
+     * @return Base64 formatted string representation of the random payload.
+     */
+    private static String generateRandomPayload(int minBytes, int maxBytes) {
+        int size = ThreadLocalRandom.current().nextInt(minBytes, maxBytes + 1);
+
+        byte[] payload = new byte[size];
+
+        ThreadLocalRandom.current().nextBytes(payload);
+
+        return Base64.getEncoder().encodeToString(payload);
     }
 }
